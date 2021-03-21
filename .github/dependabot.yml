@@ -20,3 +20,6 @@ updates:
       - dependencies
     reviewers:
       - devpow112
+    ignore:
+      - dependency-name: node
+        versions: ['>= 15.x'] # currently 14.x is the LTS
