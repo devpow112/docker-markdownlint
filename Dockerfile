@@ -1,7 +1,7 @@
 FROM node:14.16.1-slim
 
 # install packages
-RUN npm i -g markdownlint-cli
+RUN npm i -g --only=prod markdownlint-cli
 
 # default command
 CMD ["bash"]
