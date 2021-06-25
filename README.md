@@ -1,10 +1,10 @@
-# Docker Markdownlint
+# Docker MarkdownLint
 
 [![License]](LICENSE)
 [![CI][CI Badge]][CI Workflow]
 
-Docker container containing all needed tools to run **Markdownlint**. Each
-container will contain only one version of the **Markdownlint** but will contain
+Docker container containing all needed tools to run **MarkdownLint**. Each
+container will contain only one version of the **MarkdownLint** but will contain
 all additional libraries needed.
 
 ## Usage
