@@ -1,0 +1,54 @@
+name: Update MarkdownLint
+on:
+  push:
+    branches: main
+    paths: .github/workflows/update-markdownlint.yml
+  schedule:
+    - cron: '0 15 * * 1'
+permissions:
+  contents: write
+concurrency: update-markdownlint
+jobs:
+  update-markdownlint:
+    name: Update MarkdownLint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: Determine version
+        id: markdownlint
+        shell: bash
+        run: |
+          URL=https://registry.npmjs.org/markdownlint-cli/latest
+          VERSION=$(curl -sSf $URL | jq -r .version)
+          echo "::set-output name=version::$VERSION"
+      - name: Update Dockerfile
+        run: |
+          VERSION=${{steps.markdownlint.outputs.version}}
+          sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
+        env:
+          REGEX: ^(ARG MARKDOWNLINT_VERSION=\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\")$
+      - name: Check for changes
+        id: changes
+        run: >
+          git diff --exit-code Dockerfile ||
+          echo '::set-output name=exist::true'
+      - name: Push commit
+        if: steps.changes.outputs.exist
+        run: |
+          git config user.name $COMMIT_USERNAME
+          git config user.email $COMMIT_EMAIL
+          git add Dockerfile
+          git commit -m "Bump markdownlint to $VERSION"
+          CREDENTIALS="x-access-token:$GITHUB_TOKEN"
+          URL="https://$CREDENTIALS@github.com/${{github.repository}}.git"
+          git remote set-url origin $URL
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{secrets.UPDATE_MARKDOWNLINT_TOKEN}}
+          COMMIT_USERNAME: github-actions[bot]
+          COMMIT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          VERSION: ${{steps.markdownlint.outputs.version}}
