@@ -1,22 +1,26 @@
 FROM node:14.17.1-slim
 
+# set input arguments to defaults
+ARG MARKDOWNLINT_CLI_VERSION="0.27.1"
+
 # install packages
-RUN npm i -g --only=prod markdownlint-cli
+RUN npm i -g --production --no-optional \
+      markdownlint-cli@${MARKDOWNLINT_CLI_VERSION}
 
 # default command
 CMD ["/bin/bash"]
 
 # labels
-LABEL maintainer devpow112
-LABEL org.opencontainers.image.authors devpow112
-LABEL org.opencontainers.image.description \
-        "Docker container containing all needed tools to run Markdownlint."
-LABEL org.opencontainers.image.documentation \
-        https://github.com/devpow112/docker-markdownlint#readme
-LABEL org.opencontainers.image.licenses MIT
-LABEL org.opencontainers.image.source \
-        https://github.com/devpow112/docker-markdownlint
-LABEL org.opencontainers.image.title "Docker Markdownlint"
-LABEL org.opencontainers.image.url \
-        https://github.com/devpow112/docker-markdownlint
-LABEL org.opencontainers.image.vendor devpow112
+LABEL maintainer devpow112 \
+      org.opencontainers.image.authors devpow112 \
+      org.opencontainers.image.description \
+        "Docker container containing all needed tools to run Markdownlint." \
+      org.opencontainers.image.documentation \
+        https://github.com/devpow112/docker-markdownlint#readme \
+      org.opencontainers.image.licenses MIT \
+      org.opencontainers.image.source \
+        https://github.com/devpow112/docker-markdownlint \
+      org.opencontainers.image.title "Docker Markdownlint" \
+      org.opencontainers.image.url \
+        https://github.com/devpow112/docker-markdownlint \
+      org.opencontainers.image.vendor devpow112
