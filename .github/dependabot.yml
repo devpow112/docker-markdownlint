@@ -3,8 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: daily
       time: '04:00'
       timezone: America/Toronto
     rebase-strategy: auto
@@ -12,13 +11,10 @@ updates:
       - auto
       - dependencies
       - github-actions
-    reviewers:
-      - devpow112
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: daily
       time: '04:00'
       timezone: America/Toronto
     rebase-strategy: auto
@@ -26,8 +22,6 @@ updates:
       - auto
       - dependencies
       - docker
-    reviewers:
-      - devpow112
     ignore:
       - dependency-name: node
-        versions: ['>= 15.x'] # currently 14.x is the LTS
+        versions: ['>= 17.x'] # currently 16.x is the LTS
