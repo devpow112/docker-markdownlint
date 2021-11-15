@@ -30,7 +30,7 @@ jobs:
           VERSION=${{steps.markdownlint.outputs.version}}
           sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
         env:
-          REGEX: ^(ARG MARKDOWNLINT_VERSION=\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(\")$
+          REGEX: ^(ARG MARKDOWNLINT_VERSION=\")[0-9]+\.[0-9]+\.[0-9]+(\")$
       - name: Check for changes
         id: changes
         run: >
