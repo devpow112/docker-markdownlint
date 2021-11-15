@@ -1,7 +1,7 @@
 FROM node:16.13.0-slim
 
 # set input arguments to defaults
-ARG MARKDOWNLINT_VERSION="0.27.1"
+ARG MARKDOWNLINT_VERSION="0.29.0"
 
 # install packages
 RUN npm i -g --production --no-optional markdownlint-cli@${MARKDOWNLINT_VERSION}
