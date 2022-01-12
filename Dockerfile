@@ -1,4 +1,4 @@
-FROM node:16.13.1-slim
+FROM node:16.13.2-slim
 
 # set input arguments to defaults
 ARG MARKDOWNLINT_VERSION="0.30.0"
