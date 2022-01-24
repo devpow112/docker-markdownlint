@@ -5,6 +5,7 @@ on:
     paths: .github/workflows/update-markdownlint.yml
   schedule:
     - cron: '0 15 * * *'
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency: update-markdownlint
@@ -13,24 +14,27 @@ jobs:
     name: Update MarkdownLint
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      BRANCH: auto/update-markdownlint
+      REGEX: ^(ARG MARKDOWNLINT_VERSION=\")[0-9]+\.[0-9]+\.[0-9]+(\")$
     steps:
       - name: Checkout
         uses: actions/checkout@v2.4.0
-        with:
-          persist-credentials: false
       - name: Determine version
         id: markdownlint
         shell: bash
         run: |
-          URL=https://registry.npmjs.org/markdownlint-cli/latest
-          VERSION=$(curl -sSf $URL | jq -r .version)
-          echo "::set-output name=version::$VERSION"
-      - name: Update Dockerfile
-        run: |
-          VERSION=${{steps.markdownlint.outputs.version}}
-          sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
+          echo "::set-output name=version::$(curl -sSf $URL | jq -r .version)"
         env:
-          REGEX: ^(ARG MARKDOWNLINT_VERSION=\")[0-9]+\.[0-9]+\.[0-9]+(\")$
+          URL: https://registry.npmjs.org/markdownlint-cli/latest
+      - name: Switch to '${{env.BRANCH}}'
+        run: |
+          git fetch origin +refs/heads/$BRANCH:refs/heads/$BRANCH || true
+          git checkout $BRANCH || git checkout -b $BRANCH
+      - name: Update Dockerfile
+        run: sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
+        env:
+          VERSION: ${{steps.markdownlint.outputs.version}}
       - name: Check for changes
         id: changes
         run: >
@@ -39,16 +43,47 @@ jobs:
       - name: Push commit
         if: steps.changes.outputs.exist
         run: |
-          git config user.name $COMMIT_USERNAME
-          git config user.email $COMMIT_EMAIL
+          git reset --hard origin/main
+          sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
+          git config user.name ${{secrets.AUTOMATION_USER}}
+          git config user.email ${{secrets.AUTOMATION_EMAIL}}
           git add Dockerfile
           git commit -m "Bump markdownlint to $VERSION"
-          CREDENTIALS="x-access-token:$GITHUB_TOKEN"
-          URL="https://$CREDENTIALS@github.com/${{github.repository}}.git"
-          git remote set-url origin $URL
-          git push origin main
+          git push --force origin $BRANCH
         env:
-          GITHUB_TOKEN: ${{secrets.PERSONAL_GITHUB_TOKEN}}
-          COMMIT_USERNAME: github-actions[bot]
-          COMMIT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
           VERSION: ${{steps.markdownlint.outputs.version}}
+      - name: Create pull request
+        if: steps.changes.outputs.exist
+        uses: actions/github-script@v5.1.0
+        with:
+          script: |
+            const version = '${{steps.markdownlint.outputs.version}}';
+            const title = `Bump markdownlint to ${version}`;
+            const [owner, repo] = '${{github.repository}}'.split('/');
+            const base = 'refs/heads/main';
+            const head = 'refs/heads/${{env.BRANCH}}';
+            const pullRequests = await github.rest.pulls.list({
+              head: `${owner}:${head}`,
+              owner, repo, base
+            });
+            if (pullRequests.data.length === 0) {
+              const createResult = await github.rest.pulls.create({
+                title, owner, repo, head, base
+              });
+              github.rest.issues.addLabels({
+                issue_number: createResult.data.number,
+                owner, repo, labels: ['auto']
+              });
+              console.log('Created new pull request');
+              return createResult.data.number;
+            } else {
+              const prNumber = pullRequests.data.first().number;
+              github.rest.issues.update({
+                issue_number: prNumber,
+                title, owner, repo
+              });
+              console.log(`Pull request already exists, updated #${prNumber}`);
+              return prNumber;
+            }
+          result-encoding: string
+          github-token: ${{secrets.AUTOMATION_TOKEN}}
