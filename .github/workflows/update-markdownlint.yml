@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.4.0
+        with:
+          persist-credentials: false
       - name: Determine version
         id: markdownlint
         shell: bash
@@ -29,8 +31,13 @@ jobs:
           URL: https://registry.npmjs.org/markdownlint-cli/latest
       - name: Switch to '${{env.BRANCH}}'
         run: |
+          CREDENTIALS="x-access-token:$GITHUB_TOKEN"
+          URL="https://$CREDENTIALS@github.com/${{github.repository}}.git"
+          git remote set-url origin $URL
           git fetch origin +refs/heads/$BRANCH:refs/heads/$BRANCH || true
           git checkout $BRANCH || git checkout -b $BRANCH
+        env:
+          GITHUB_TOKEN: ${{secrets.AUTOMATION_TOKEN}}
       - name: Update Dockerfile
         run: sed -i -E "s/$REGEX/\1$VERSION\2/" Dockerfile
         env:
@@ -49,8 +56,12 @@ jobs:
           git config user.email ${{secrets.AUTOMATION_EMAIL}}
           git add Dockerfile
           git commit -m "Bump markdownlint to $VERSION"
+          CREDENTIALS="x-access-token:$GITHUB_TOKEN"
+          URL="https://$CREDENTIALS@github.com/${{github.repository}}.git"
+          git remote set-url origin $URL
           git push --force origin $BRANCH
         env:
+          GITHUB_TOKEN: ${{secrets.AUTOMATION_TOKEN}}
           VERSION: ${{steps.markdownlint.outputs.version}}
       - name: Create pull request
         if: steps.changes.outputs.exist
