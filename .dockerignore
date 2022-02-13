@@ -5,9 +5,8 @@
 .editorconfig
 .gitattributes
 .gitignore
-.hadolint.yml
-.markdownlintignore
-.markdownlintrc
+.markdownlint.yml
+..markdownlintignore
 Dockerfile
 LICENSE
 README.md
