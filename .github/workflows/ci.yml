@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
-          key: buildx-${{hashFiles('Dockerfile', '.dockerignore', 'root/**')}}
+          key: buildx-${{hashFiles('Dockerfile', '.dockerignore')}}
           restore-keys: buildx-
       - name: Build image
         uses: docker/build-push-action@v2.9.0
@@ -75,7 +75,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
-          key: buildx-${{hashFiles('Dockerfile', '.dockerignore', 'root/**')}}
+          key: buildx-${{hashFiles('Dockerfile', '.dockerignore')}}
           restore-keys: buildx-
       - name: Build image
         uses: docker/build-push-action@v2.9.0
