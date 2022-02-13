@@ -1,7 +1,7 @@
 # Docker MarkdownLint
 
 [![License]](LICENSE)
-[![CI][CI Badge]][CI Workflow]
+[![Release][Release Badge]][Release Workflow]
 
 Docker container containing all needed tools to run **MarkdownLint**. Each
 container will contain only one version of the **MarkdownLint** but will contain
@@ -36,5 +36,5 @@ docker build -t markdownlint .
 
 <!-- external links -->
 [License]: https://img.shields.io/github/license/devpow112/docker-markdownlint?label=License
-[CI Badge]: https://github.com/devpow112/docker-markdownlint/actions/workflows/ci.yml/badge.svg?branch=main
-[CI Workflow]: https://github.com/devpow112/docker-markdownlint/actions/workflows/ci.yml?query=branch%3Amain
+[Release Badge]: https://github.com/devpow112/docker-markdownlint/actions/workflows/release.yml/badge.svg?branch=main
+[Release Workflow]: https://github.com/devpow112/docker-markdownlint/actions/workflows/release.yml?query=branch%3Amain
