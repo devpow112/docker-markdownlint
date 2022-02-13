@@ -4,7 +4,19 @@ FROM node:16.14.0-slim
 ARG MARKDOWNLINT_VERSION="0.31.1"
 
 # install packages
-RUN npm i -g --production --no-optional markdownlint-cli@${MARKDOWNLINT_VERSION}
+RUN export DEBIAN_FRONTEND='noninteractive' && \
+    echo '###### Set up packages' && \
+    npm i -g --production --no-optional \
+      markdownlint-cli@${MARKDOWNLINT_VERSION} && \
+    echo '###### Clean up' && \
+    apt-get autoremove --purge -y && \
+    apt-get autoclean && \
+    apt-get clean && \
+    rm -rf \
+      /var/lib/apt/lists/* \
+      /var/tmp/* \
+      /var/log/* \
+      /tmp/*
 
 # default command
 CMD ["/bin/bash"]
