@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
-          key: buildx-${{hashFiles('Dockerfile', '.dockerignore', 'root/**')}}
+          key: buildx-${{hashFiles('Dockerfile', '.dockerignore')}}
           restore-keys: buildx-
       - name: Login to registry
         uses: docker/login-action@v1.12.0
