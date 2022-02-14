@@ -6,7 +6,7 @@
 > * [DavidAnson/markdownlint-cli2-action]
 > * [igorshubovych/markdownlint-cli]
 
-# Docker MarkdownLint
+# Docker MarkdownLint (🚨 Unmaintained 🚨)
 
 [![License]](LICENSE)
 [![Release][Release Badge]][Release Workflow]
