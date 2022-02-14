@@ -65,7 +65,7 @@ jobs:
           VERSION: ${{steps.markdownlint.outputs.version}}
       - name: Create pull request
         if: steps.changes.outputs.exist
-        uses: actions/github-script@v6
+        uses: actions/github-script@v6.0.0
         with:
           script: |
             const version = '${{steps.markdownlint.outputs.version}}';
